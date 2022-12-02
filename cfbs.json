@@ -1,11 +1,16 @@
 {
-    "promise-type-scl-docker_compose": {
-      "description": "Promise type to manage docker compose installation",
-      "dependencies": ["library-for-promise-types-in-bash"],
-      "subdirectory": "promise-types/docker_compose/",
-      "steps": [
-        "copy docker_compose.sh modules/promises/scl_docker_compose.sh",
-        "append enable.cf services/init.cf"
-      ]
+    "name": "scl_modules",
+    "description": "Repository of modules written by the SURF team",
+    "type": "modules",
+    "provides": {
+        "promise-type-scl-docker_compose": {
+            "description": "Promise type to manage docker compose installation", 
+            "dependencies": ["library-for-promise-types-in-bash"],
+            "subdirectory": "promise-types/docker_compose/",
+            "steps": [
+                "copy docker_compose.sh modules/promises/scl_docker_compose.sh",
+                "append enable.cf services/init.cf"
+            ]
+        }
     }
 }
