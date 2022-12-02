@@ -8,5 +8,4 @@
         "append enable.cf services/init.cf"
       ]
     }
-  }
 }
