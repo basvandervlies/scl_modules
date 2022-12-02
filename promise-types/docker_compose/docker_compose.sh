@@ -6,9 +6,9 @@ all_attributes_are_valid="no"
 LOG_PREFIX="${0##*/}"
 
 declare -A DOCKER_STATES
-DOCKER_STATES["running"]=1
-DOCKER_STATES["stop"]=1
-DOCKER_STATES["kill"]=1
+DOCKER_STATES["start"]="running"
+DOCKER_STATES["stop"]="exited"
+DOCKER_STATES["kill"]="exited"
 
 do_validate() {
     response_result="valid"
@@ -79,10 +79,16 @@ do_evaluate() {
             health=$(echo $s | awk -F: '{ print $3 }')
             service=$(echo $s | awk -F: '{ print $4 }')
 
-            if [[ ${state} != ${request_attribute_state} ]]
+            if [[ ${state} != ${DOCKER_STATES[${request_attribute_state}]} ]]
             then
-                log info "${LOG_PREFIX}:service:'${service}' state:'${state}' is different then requested:'${request_attribute_state}'"
-                response_result="repaired"
+                log info "${LOG_PREFIX}:service:'${service}' state:'${state}' is different then requested:'${DOCKER_STATES[${request_attribute_state}]}'"
+                result=$(${docker_cmd} ${request_attribute_state} ${service})
+                if [[ $? -ne 0 ]]
+                then
+                    response_result="not_kept"
+                else
+                    response_result="repaired"
+                fi
             fi
         done
     fi
