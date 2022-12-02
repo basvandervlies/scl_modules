@@ -3,6 +3,8 @@ optional_attributes=""
 all_attributes_are_valid="no"
 
 
+LOG_PREFIX="${0##*/}"
+
 declare -A DOCKER_STATES
 DOCKER_STATES["running"]=1
 DOCKER_STATES["stop"]=1
@@ -14,7 +16,7 @@ do_validate() {
 
     if [[ ! -v DOCKER_STATES[${request_attribute_state}] ]]
     then
-        log error "Invalid state specified '${request_attribute_state}'"
+        log error "${LOG_PREFIX}:Invalid state specified:'${request_attribute_state}'"
         response_result="invalid"
     fi
 }
@@ -33,12 +35,12 @@ do_evaluate() {
 
 
 
-    log debug ${request_promiser}
+    log debug "${LOG_PREFIX}:${request_promiser}"
 
     docker_status=$(${docker_cmd} ps --format=json | jq -r '.[] | .Name + ":" + .State + ":" + .Health + ":" + .Service')
     if [[ $? -ne 0 ]]
     then
-        log error "docker compose query failed: ${docker_status}"
+        log error "${LOG_PREFIX}:query failed: ${docker_status}"
         response_result="not_kept"
         return 1
     fi
@@ -52,10 +54,10 @@ do_evaluate() {
                 result=$(${docker_up})
                 if [[ $? -ne 0 ]]
                 then
-                    log error "'${docker_up}' failed with: '${result}'"
+                    log error "${LOG_PREFIX}:'${docker_up}' failed with: '${result}'"
                     response_result="not_kept"
                 else
-                    log info "Started all containers with '${docker_up}'"
+                    log info "${LOG_PREFIX}:Started all containers with '${docker_up}'"
                     response_result="repaired"
                 fi
                 ;;
@@ -79,7 +81,7 @@ do_evaluate() {
 
             if [[ ${state} != ${request_attribute_state} ]]
             then
-                log info "service:'${service}' state:'${state}' is different then requested:'${request_attribute_state}'"
+                log info "${LOG_PREFIX}:service:'${service}' state:'${state}' is different then requested:'${request_attribute_state}'"
                 response_result="repaired"
             fi
         done
