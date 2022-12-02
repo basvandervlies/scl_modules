@@ -1,0 +1,6 @@
+promise agent scl_docker_compose
+# @brief Define systemd promise type
+{
+  path => "$(sys.workdir)/modules/promises/scl_docker_compose.sh
+  interpreter => "/bin/bash";
+}
