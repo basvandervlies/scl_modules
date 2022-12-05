@@ -7,8 +7,10 @@ LOG_PREFIX="${0##*/}"
 
 declare -A DOCKER_STATES
 DOCKER_STATES["start"]="running"
+DOCKER_STATES["restart"]="running"
 DOCKER_STATES["stop"]="exited"
 DOCKER_STATES["kill"]="exited"
+
 
 do_validate() {
     response_result="valid"
@@ -49,15 +51,15 @@ do_evaluate() {
     if [[ -z ${docker_status} ]]
     then
 
-        case "${request_attribute_state}" in
+        case "${DOCKER_STATES[${request_attribute_state}]}" in
             "running")
                 result=$(${docker_up})
                 if [[ $? -ne 0 ]]
                 then
-                    log error "${LOG_PREFIX}:'${docker_up}' failed with: '${result}'"
+                    log error "${LOG_PREFIX}:'${docker_up}' failed with:'${result}'"
                     response_result="not_kept"
                 else
-                    log info "${LOG_PREFIX}:Started all containers with '${docker_up}'"
+                    log info "${LOG_PREFIX}:Started all containers with:'${docker_up}'"
                     response_result="repaired"
                 fi
                 ;;
@@ -65,6 +67,19 @@ do_evaluate() {
                 response_result="kept"
                 ;;
         esac
+
+    elif [[ ${request_attribute_state} == "restart" ]]
+    then
+
+        log info "${LOG_PREFIX}:Restarted all containers with:'${docker_cmd} restart'"
+        result=$(${docker_cmd} restart)
+        if [[ $? -ne 0 ]]
+        then
+            log error "${LOG_PREFIX}:Restart failed with:'${result}'"
+            response_classes="${request_promiser}_failed"
+        else
+            response_classes="${request_promiser}_restarted"
+        fi
 
     else
         for s in ${docker_status}
