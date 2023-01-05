@@ -26,6 +26,7 @@ do_evaluate() {
         absent)
             if [[ ${result} -ne 0 ]]
             then
+                log info "${LOG_PREFIX}: docker network ${request_promiser} present so remove"
                 result=$(docker network rm ${request_promiser})
                 response_result="repaired"
             fi
@@ -33,6 +34,7 @@ do_evaluate() {
         present)
             if [[ ${result} -eq 0 ]]
             then
+                log info "${LOG_PREFIX}: docker network ${request_promiser} absent so add"
                 result=$(docker network create ${request_promiser})
                 response_result="repaired"
             fi
