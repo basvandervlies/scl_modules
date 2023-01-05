@@ -12,6 +12,16 @@
                 "copy docker_compose.sh modules/promises/scl_docker_compose.sh",
                 "append enable.cf services/init.cf"
             ]
+        },
+        "promise-type-scl-docker_network": {
+            "description": "Promise type to manage docker network(s)", 
+            "dependencies": ["library-for-promise-types-in-bash"],
+            "subdirectory": "promise-types/docker_network/",
+            "version": "master",
+            "steps": [
+                "copy docker_network.sh modules/promises/scl_docker_network.sh",
+                "append enable.cf services/init.cf"
+            ]
         }
     }
 }
