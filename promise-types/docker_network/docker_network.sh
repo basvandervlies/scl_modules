@@ -20,7 +20,7 @@ do_evaluate() {
     response_result="kept"
 
 
-    log debug "${LOG_PREFIX}:${request_promiser} result: ${result}"
+    log debug "${LOG_PREFIX}:${request_promiser}"
 
     case "${request_attribute_state}" in
         absent)
