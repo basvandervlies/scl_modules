@@ -8,7 +8,7 @@
 
 ## Requirements
 
-& docker network (command line tool)
+* docker network (command line tool)
 
 ## Attributes
 
