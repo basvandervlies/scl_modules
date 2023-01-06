@@ -9,7 +9,7 @@
 ## Requirements
 
 * jq (json command line tool)
-& docker compose (command line tool)
+* docker compose (command line tool)
 
 ## Attributes
 
