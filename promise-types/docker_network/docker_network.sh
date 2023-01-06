@@ -44,4 +44,4 @@ do_evaluate() {
 }
 
 . "$(dirname "$0")/cfengine.sh"
-module_main "docker_network" "1.0"
+module_main "scl_docker_network" "1.0"

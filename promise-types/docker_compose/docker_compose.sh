@@ -110,4 +110,4 @@ do_evaluate() {
 }
 
 . "$(dirname "$0")/cfengine.sh"
-module_main "docker_compose" "1.0"
+module_main "scl_docker_compose" "1.0"
