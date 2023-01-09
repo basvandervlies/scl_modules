@@ -1,5 +1,5 @@
 required_attributes="state"
-optional_attributes=""
+optional_attributes="envfile"
 all_attributes_are_valid="no"
 
 
@@ -8,6 +8,7 @@ LOG_PREFIX="${0##*/}"
 declare -A DOCKER_STATES
 DOCKER_STATES["start"]="running"
 DOCKER_STATES["restart"]="running"
+DOCKER_STATES["up"]="running"
 DOCKER_STATES["stop"]="exited"
 DOCKER_STATES["kill"]="exited"
 
@@ -31,11 +32,15 @@ do_evaluate() {
     # Default the promise is alwasys 'kept'
     response_result="kept"
 
+    if [[ -n ${request_attribute_envfile} ]]
+    then
+        docker_envfile="--env-file ${request_attribute_envfile}"
+    else
+        docker_envfile=""
+    fi
 
-    docker_cmd="docker compose --file=${request_promiser}"
+    docker_cmd="docker compose --file=${request_promiser} ${docker_envfile}"
     docker_up="${docker_cmd} up --detach"
-
-
 
     log debug "${LOG_PREFIX}:${request_promiser}"
 
@@ -68,6 +73,19 @@ do_evaluate() {
                 ;;
         esac
 
+    elif [[ ${request_attribute_state} == "up" ]]
+    then
+
+        log info "${LOG_PREFIX}:Recreate all containers with:'${docker_cmd} up'"
+        result=$(${docker_up})
+        if [[ $? -ne 0 ]]
+        then
+            log error "${LOG_PREFIX}:'${docker_up}' failed with:'${result}'"
+            response_result="not_kept"
+        else
+            log info "${LOG_PREFIX}:Started all containers with:'${docker_up}'"
+            response_result="repaired"
+        fi
     elif [[ ${request_attribute_state} == "restart" ]]
     then
 
