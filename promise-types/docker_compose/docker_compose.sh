@@ -1,3 +1,7 @@
+#!/bin/bash
+#
+# scl_docker_compose.sh @SURF
+#
 required_attributes="state"
 optional_attributes="envfile"
 all_attributes_are_valid="no"

@@ -1,3 +1,7 @@
+#!/bin/bash
+#
+# scl_docker_network.sh @SURF
+#
 required_attributes="state"
 optional_attributes=""
 all_attributes_are_valid="no"
