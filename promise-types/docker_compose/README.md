@@ -1,8 +1,8 @@
-# scl_docker_compose promise type
+# docker_compose promise type
 
 ## Synopsis
 
-* *Name*: `scl_docker_compose`
+* *Name*: `docker_compose`
 * *Version*: `1.0.0`
 * *Description*:  Handle the state of the containers defined in the yaml file
 
@@ -25,7 +25,7 @@ Make sure that the docker images are specified in the yaml file are running
 ```cfengine3
 bundle agent main
 {
-    scl_docker_compose:
+    docker_compose:
         "/srv/traefik/docker_compose.yaml"
             state => "start";
 }
@@ -35,7 +35,7 @@ THis is how we handle a restart if the docker compose file has been changed
 ```cfengine3
 bundle agent main
 {
-    scl_docker_compose:                                                                                                                                                                                             
+    docker_compose:
         "/srv/traefik/docker_compose.yaml"
             state => "restart",                                                                                                                                                                                 
             if => not(canonify("$(this.promiser)_restarted"));  
