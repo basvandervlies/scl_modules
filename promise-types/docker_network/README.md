@@ -1,8 +1,8 @@
-# scl_docker_network promise type
+# docker_network promise type
 
 ## Synopsis
 
-* *Name*: `scl_docker_network`
+* *Name*: `docker_network`
 * *Version*: `1.0.0`
 * *Description*:  Create/Delete docker network(s)
 
@@ -23,7 +23,7 @@ Make sure that the docker images are specified in the yaml file are running
 ```cfengine3
 bundle agent main
 {
-    scl_docker_network:
+    docker_network:
         "public"
             state => "present";
 }
