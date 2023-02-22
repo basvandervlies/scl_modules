@@ -1,5 +1,5 @@
 promise agent docker_network
-# @brief Define scl_docker_network promise type
+# @brief Define docker_network promise type
 {
   path => "$(sys.workdir)/modules/promises/docker_network.sh";
   interpreter => "/bin/bash";

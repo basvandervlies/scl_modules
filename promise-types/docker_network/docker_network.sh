@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# scl_docker_network.sh @SURF
+# docker_network.sh @SURF
 #
 required_attributes="state"
 optional_attributes=""
@@ -48,4 +48,4 @@ do_evaluate() {
 }
 
 . "$(dirname "$0")/cfengine.sh"
-module_main "scl_docker_network" "1.0"
+module_main "docker_network" "1.0"

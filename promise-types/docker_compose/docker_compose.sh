@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# scl_docker_compose.sh @SURF
+# docker_compose.sh @SURF
 #
 required_attributes="state"
 optional_attributes="envfile"
@@ -132,4 +132,4 @@ do_evaluate() {
 }
 
 . "$(dirname "$0")/cfengine.sh"
-module_main "scl_docker_compose" "1.0"
+module_main "docker_compose" "1.0"
