@@ -17,7 +17,7 @@
 | --------------- | --------- | ----------------------------------------------------------------------------------------------------------------------- | --------- | -------- |
 | `file`          | `string`  | Docker compose yaml file                                                                                                | Yes       | Promiser |
 | `state`         | `string`  | State of the docker images: start, stop, restart, kill, up                                                              | Yes       | -        |
-| `envfile`       | `string`  | Specify which env-file needs to be included                                                                             | Yes       | -        |
+| `envfile`       | `string`  | Specify which env-file needs to be included                                                                             | No      | -        |
 
 ## Examples
 
