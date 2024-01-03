@@ -4,7 +4,7 @@
     "type": "modules",
     "provides": {
         "promise-type-docker_compose": {
-            "description": "Promise type to manage docker compose installations", 
+            "description": "Promise type to manage containers using docker compose",
             "dependencies": ["library-for-promise-types-in-bash"],
             "subdirectory": "promise-types/docker_compose/",
             "version": "master",
@@ -14,7 +14,7 @@
             ]
         },
         "promise-type-docker_network": {
-            "description": "Promise type to manage docker network(s)", 
+            "description": "Promise type to manage networks using docker network",
             "dependencies": ["library-for-promise-types-in-bash"],
             "subdirectory": "promise-types/docker_network/",
             "version": "master",
