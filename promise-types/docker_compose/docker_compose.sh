@@ -48,7 +48,8 @@ do_evaluate() {
 
     log debug "${LOG_PREFIX}:${request_promiser}"
 
-    docker_status=$(${docker_cmd} ps --format=json | jq -r '.[] | .Name + ":" + .State + ":" + .Health + ":" + .Service')
+    # format has been changed since version 2.21.0
+    docker_status=$(${docker_cmd} ps --format=json | jq -s '.[] | if type=="array" then . else [.] end' | jq -r '.[] | .Name + ":" + .State + ":" + .Health + ":" + .Service')
     if [[ $? -ne 0 ]]
     then
         log error "${LOG_PREFIX}:query failed: ${docker_status}"
