@@ -1,0 +1,6 @@
+promise agent kernel_modules
+# @brief Define kernel_modules promise type
+{
+  path => "$(sys.workdir)/modules/promises/kernel_modules.sh";
+  interpreter => "/bin/bash";
+}
