@@ -4,7 +4,7 @@
 #
 #set -x
 required_attributes="policy"
-optional_attributes=""
+optional_attributes="comment"
 all_attributes_are_valid="no"
 
 KERNEL_MODULES_LOADED="/proc/modules"
