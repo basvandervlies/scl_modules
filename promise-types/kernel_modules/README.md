@@ -19,7 +19,7 @@
 
 ## Examples
 
-Make sure that the docker images are specified in the yaml file are running
+Make sure that the kernel module is loaded
 ```cfengine3
 bundle agent main
 {
