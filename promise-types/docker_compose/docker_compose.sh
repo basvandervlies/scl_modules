@@ -71,7 +71,7 @@ do_evaluate() {
         response_result="not_kept"
         return 1
     fi
-    if ! $(${docker_cmd} ps --help | grep -- --format 2>&1)
+    if ! $(${docker_cmd} ps --help | grep -- --format >/dev/null)
     then
         log error "${LOG_PREFIX}:${docker_cmd} does not support --format=json. Please upgrade to a newer version, probably >= 2.0.0"
         response_result="not_kept"
