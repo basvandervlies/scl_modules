@@ -43,31 +43,45 @@ do_evaluate() {
         docker_envfile=""
     fi
 
-    docker_cmd="docker compose --file=${request_promiser} ${docker_envfile}"
+    docker_compose_cmd="" # not found yet
+    if command -v docker-compose >/dev/null; then
+      docker_compose_cmd="docker-compose"
+    elif command -v docker >/dev/null; then
+      docker_compose_cmd="docker compose"
+    else
+      log error "${LOG_PREFIX}:Cannot find either docker or docker-compose commands."
+      response_result="not_kept"
+      return 1
+    fi
+    docker_cmd="${docker_compose_cmd} --file=${request_promiser} ${docker_envfile}"
     docker_up="${docker_cmd} up --detach"
 
     log debug "${LOG_PREFIX}:${request_promiser}"
 
     # format has been changed since version 2.21.0
-    docker_status=$(${docker_cmd} ps --format=json | jq -s '.[] | if type=="array" then . else [.] end' | jq -r '.[] | .Name + ":" + .State + ":" + .Health + ":" + .Service')
-    if [[ $? -ne 0 ]]
+    docker_ps_output=$(${docker_cmd} ps --format=json 2>&1)
+    exit_code=$?
+    if [[ "$exit_code" -ne 0 ]]
     then
-        log error "${LOG_PREFIX}:query failed: ${docker_status}"
-        response_result="not_kept"
+        oneline=$(echo ${docker_ps_output})
+        log error "${LOG_PREFIX}:${docker_cmd} ps failed. exit code: ${exit_code}, output: ${oneline}"
+        repsonse_result="not_kept"
         return 1
     fi
+    docker_status=$(echo ${docker_ps_output} | jq -s '.[] | if type=="array" then . else [.] end' | jq -r '.[] | .Name + ":" + .State + ":" + .Health + ":" + .Service')
 
-    ## No containers are started
-    if [[ -z ${docker_status} ]]
+    log info "${LOG_PREFIX}:No containers are started"
+    if [[ -z ${docker_ps_output} ]]
     then
 
         case "${DOCKER_STATES[${request_attribute_state}]}" in
             "running")
-                result=$(${docker_up})
+                result=$(${docker_up} 2>&1)
                 if [[ $? -ne 0 ]]
                 then
                     log error "${LOG_PREFIX}:'${docker_up}' failed with:'${result}'"
                     response_result="not_kept"
+                    return 1
                 else
                     log info "${LOG_PREFIX}:Started all containers with:'${docker_up}'"
                     response_result="repaired"
@@ -90,16 +104,18 @@ do_evaluate() {
         else
             log info "${LOG_PREFIX}:Started all containers with:'${docker_up}'"
             response_result="repaired"
+            return 0
         fi
     elif [[ ${request_attribute_state} == "restart" ]]
     then
 
         log info "${LOG_PREFIX}:Restarted all containers with:'${docker_cmd} restart'"
-        result=$(${docker_cmd} restart)
+        result=$(${docker_cmd} restart 2>&1)
         if [[ $? -ne 0 ]]
         then
             log error "${LOG_PREFIX}:Restart failed with:'${result}'"
             response_classes="${request_promiser}_failed"
+            return 1
         else
             response_classes="${request_promiser}_restarted"
         fi
@@ -120,12 +136,14 @@ do_evaluate() {
             if [[ ${state} != ${DOCKER_STATES[${request_attribute_state}]} ]]
             then
                 log info "${LOG_PREFIX}:service:'${service}' state:'${state}' is different then requested:'${DOCKER_STATES[${request_attribute_state}]}'"
-                result=$(${docker_cmd} ${request_attribute_state} ${service})
+                result=$(${docker_cmd} ${request_attribute_state} ${service} 2>&1)
                 if [[ $? -ne 0 ]]
                 then
                     response_result="not_kept"
+                    return 1
                 else
                     response_result="repaired"
+#                    return 0 # although, do we have more work to do!?
                 fi
             fi
         done
