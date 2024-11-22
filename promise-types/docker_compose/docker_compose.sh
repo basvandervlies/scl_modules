@@ -53,22 +53,37 @@ do_evaluate() {
       response_result="not_kept"
       return 1
     fi
+    log info "${LOG_PREFIX}:Found docker compose command: ${docker_compose_cmd}"
     docker_cmd="${docker_compose_cmd} --file=${request_promiser} ${docker_envfile}"
     docker_up="${docker_cmd} up --detach"
 
-    log debug "${LOG_PREFIX}:${request_promiser}"
+    log verbose "${LOG_PREFIX}:${request_promiser}"
 
     # format has been changed since version 2.21.0
     docker_ps_output=$(${docker_cmd} ps --format=json 2>&1)
     exit_code=$?
+    oneline=$(echo ${docker_ps_output})
+    log verbose "${LOG_PREFIX}:ps output: ${oneline}, exit_code=${exit_code}"
     if [[ "$exit_code" -ne 0 ]]
     then
         oneline=$(echo ${docker_ps_output})
         log error "${LOG_PREFIX}:${docker_cmd} ps failed. exit code: ${exit_code}, output: ${oneline}"
-        repsonse_result="not_kept"
+        response_result="not_kept"
+        return 1
+    fi
+    if ! $(${docker_cmd} ps --help | grep -- --format 2>&1)
+    then
+        log error "${LOG_PREFIX}:${docker_cmd} does not support --format=json. Please upgrade to a newer version, probably >= 2.0.0"
+        response_result="not_kept"
         return 1
     fi
     docker_status=$(echo ${docker_ps_output} | jq -s '.[] | if type=="array" then . else [.] end' | jq -r '.[] | .Name + ":" + .State + ":" + .Health + ":" + .Service')
+    if [[ $? -ne 0 ]]
+    then
+        log error "${LOG_PREFIX}:Could not parse json output of ${docker_cmd} ps"
+        response_result="not_kept"
+        return 1
+    fi
 
     log info "${LOG_PREFIX}:No containers are started"
     if [[ -z ${docker_ps_output} ]]
