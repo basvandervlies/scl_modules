@@ -44,12 +44,12 @@ do_evaluate() {
     fi
 
     docker_compose_cmd="" # not found yet
-    if command -v docker-compose >/dev/null; then
-      docker_compose_cmd="docker-compose"
-    elif command -v docker >/dev/null; then
+    if command -v docker compose >/dev/null; then
       docker_compose_cmd="docker compose"
+    elif command -v docker-compose >/dev/null; then
+      docker_compose_cmd="docker-compose"
     else
-      log error "${LOG_PREFIX}:Cannot find either docker or docker-compose commands."
+      log error "${LOG_PREFIX}:Cannot find either 'docker compose' or 'docker-compose' commands."
       response_result="not_kept"
       return 1
     fi
@@ -59,7 +59,6 @@ do_evaluate() {
 
     log verbose "${LOG_PREFIX}:${request_promiser}"
 
-    # format has been changed since version 2.21.0
     docker_ps_output=$(${docker_cmd} ps --format=json 2>&1)
     exit_code=$?
     oneline=$(echo ${docker_ps_output})
@@ -70,13 +69,15 @@ do_evaluate() {
         log error "${LOG_PREFIX}:${docker_cmd} ps failed. exit code: ${exit_code}, output: ${oneline}"
         response_result="not_kept"
         return 1
-    fi
+    fi   
     if ! $(${docker_cmd} ps --help | grep -- --format >/dev/null)
     then
         log error "${LOG_PREFIX}:${docker_cmd} does not support --format=json. Please upgrade to a newer version, probably >= 2.0.0"
         response_result="not_kept"
         return 1
     fi
+    
+    # format has been changed since version 2.21.0
     docker_status=$(echo ${docker_ps_output} | jq -s '.[] | if type=="array" then . else [.] end' | jq -r '.[] | .Name + ":" + .State + ":" + .Health + ":" + .Service')
     if [[ $? -ne 0 ]]
     then
@@ -85,7 +86,7 @@ do_evaluate() {
         return 1
     fi
 
-    log info "${LOG_PREFIX}:No containers are started"
+    
     if [[ -z ${docker_ps_output} ]]
     then
 
