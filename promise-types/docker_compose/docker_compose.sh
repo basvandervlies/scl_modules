@@ -44,16 +44,19 @@ do_evaluate() {
     fi
 
     docker_compose_cmd="" # not found yet
-    if command -v docker compose >/dev/null; then
+    result=$(docker compose version)
+    if [[ -n ${result} ]]
+    then
       docker_compose_cmd="docker compose"
-    elif command -v docker-compose >/dev/null; then
+    elif command -v docker-compose >/dev/null 4>&1
+    then
       docker_compose_cmd="docker-compose"
     else
       log error "${LOG_PREFIX}:Cannot find either 'docker compose' or 'docker-compose' commands."
       response_result="not_kept"
       return 1
     fi
-    log info "${LOG_PREFIX}:Found docker compose command: ${docker_compose_cmd}"
+    log debug "${LOG_PREFIX}:Found docker compose command: ${docker_compose_cmd}"
     docker_cmd="${docker_compose_cmd} --file=${request_promiser} ${docker_envfile}"
     docker_up="${docker_cmd} up --detach"
 
@@ -69,14 +72,14 @@ do_evaluate() {
         log error "${LOG_PREFIX}:${docker_cmd} ps failed. exit code: ${exit_code}, output: ${oneline}"
         response_result="not_kept"
         return 1
-    fi   
+    fi
     if ! $(${docker_cmd} ps --help | grep -- --format >/dev/null)
     then
         log error "${LOG_PREFIX}:${docker_cmd} does not support --format=json. Please upgrade to a newer version, probably >= 2.0.0"
         response_result="not_kept"
         return 1
     fi
-    
+
     # format has been changed since version 2.21.0
     docker_status=$(echo ${docker_ps_output} | jq -s '.[] | if type=="array" then . else [.] end' | jq -r '.[] | .Name + ":" + .State + ":" + .Health + ":" + .Service')
     if [[ $? -ne 0 ]]
@@ -86,10 +89,8 @@ do_evaluate() {
         return 1
     fi
 
-    
     if [[ -z ${docker_ps_output} ]]
     then
-
         case "${DOCKER_STATES[${request_attribute_state}]}" in
             "running")
                 result=$(${docker_up} 2>&1)
@@ -110,7 +111,6 @@ do_evaluate() {
 
     elif [[ ${request_attribute_state} == "up" ]]
     then
-
         log info "${LOG_PREFIX}:Recreate all containers with:'${docker_cmd} up'"
         result=$(${docker_up})
         if [[ $? -ne 0 ]]
@@ -124,7 +124,6 @@ do_evaluate() {
         fi
     elif [[ ${request_attribute_state} == "restart" ]]
     then
-
         log info "${LOG_PREFIX}:Restarted all containers with:'${docker_cmd} restart'"
         result=$(${docker_cmd} restart 2>&1)
         if [[ $? -ne 0 ]]
@@ -135,7 +134,6 @@ do_evaluate() {
         else
             response_classes="${request_promiser}_restarted"
         fi
-
     else
         for s in ${docker_status}
         do
