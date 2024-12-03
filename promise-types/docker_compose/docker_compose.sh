@@ -44,11 +44,11 @@ do_evaluate() {
     fi
 
     docker_compose_cmd="" # not found yet
-    result=$(docker compose version)
+    result=$(docker compose version 2>/dev/null)
     if [[ -n ${result} ]]
     then
       docker_compose_cmd="docker compose"
-    elif command -v docker-compose >/dev/null 4>&1
+    elif command -v docker-compose >/dev/null
     then
       docker_compose_cmd="docker-compose"
     else
@@ -56,7 +56,7 @@ do_evaluate() {
       response_result="not_kept"
       return 1
     fi
-    log debug "${LOG_PREFIX}:Found docker compose command: ${docker_compose_cmd}"
+    log verbose "${LOG_PREFIX}:Found docker compose command: ${docker_compose_cmd}"
     docker_cmd="${docker_compose_cmd} --file=${request_promiser} ${docker_envfile}"
     docker_up="${docker_cmd} up --detach"
 
