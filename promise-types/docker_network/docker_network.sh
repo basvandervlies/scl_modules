@@ -18,7 +18,7 @@ do_evaluate() {
     local result
 
     # 0 does not exist, if >0 it exists
-    result=$(docker network inspect ${request_promiser} 2>/dev/null | jq '. | length')
+    result=$(docker network inspect ${request_promiser} 2>/dev/null | jq 'length')
 
     # Default the promise is alwasys 'kept'
     response_result="kept"
