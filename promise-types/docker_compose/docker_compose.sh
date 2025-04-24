@@ -81,7 +81,7 @@ do_evaluate() {
     fi
 
     # format has been changed since version 2.21.0
-    docker_status=$(echo ${docker_ps_output} | jq -s '.[] | if type=="array" then . else [.] end' | jq -r '.[] | .Name + ":" + .State + ":" + .Health + ":" + .Service')
+    docker_status=$(echo ${docker_ps_output} | jq --slurp --raw-output 'flatten[] | .Name + ":" + .State + ":" + .Health + ":" + .Service')
     if [[ $? -ne 0 ]]
     then
         log error "${LOG_PREFIX}:Could not parse json output of ${docker_cmd} ps"
@@ -142,10 +142,7 @@ do_evaluate() {
             local health
             local state
 
-            name=$(echo $s | awk -F: '{ print $1 }')
-            state=$(echo $s | awk -F: '{ print $2 }')
-            health=$(echo $s | awk -F: '{ print $3 }')
-            service=$(echo $s | awk -F: '{ print $4 }')
+            IFS=: read name state health service <<< "$s"
 
             if [[ ${state} != ${DOCKER_STATES[${request_attribute_state}]} ]]
             then

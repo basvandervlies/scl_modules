@@ -7,9 +7,6 @@ required_attributes="policy"
 optional_attributes="comment"
 all_attributes_are_valid="no"
 
-KERNEL_MODULES_LOADED="/proc/modules"
-
-
 LOG_PREFIX="${0##*/}"
 
 do_validate() {
@@ -17,21 +14,21 @@ do_validate() {
 }
 
 do_evaluate() {
-
     local result
 
-    # 0 does not exist, if >0 it exists
-    result=$(grep --count --regexp="^${request_promiser} " ${KERNEL_MODULES_LOADED} 2>/dev/null)
+    # 1 does not exist, if 0 it exists
+    test -d /sys/module/${request_promiser}
+    result=$?
+    [ $result -eq 0 ] && loaded=1 || loaded=0
 
-    # Default the promise is alwasys 'kept'
+    # Default the promise is always 'kept'
     response_result="kept"
 
-
-    log debug "${LOG_PREFIX}:${request_promiser}:${result}"
+    log debug "${LOG_PREFIX}:${request_promiser}:${loaded}"
 
     case "${request_attribute_policy}" in
         absent)
-            if [[ ${result} -eq 1 ]]
+            if [[ ${result} -eq 0 ]]
             then
                 log info "${LOG_PREFIX}:${request_promiser}:present so remove"
                 result=$(modprobe --remove --quiet ${request_promiser})
@@ -45,7 +42,7 @@ do_evaluate() {
             fi
         ;;
         present)
-            if [[ ${result} -eq 0 ]]
+            if [[ ${result} -eq 1 ]]
             then
                 log info "${LOG_PREFIX}:${request_promiser}:absent so add"
                 result=$(modprobe --quiet ${request_promiser})
@@ -59,7 +56,6 @@ do_evaluate() {
             fi
         ;;
     esac
-
 }
 
 . "$(dirname "$0")/cfengine.sh"
