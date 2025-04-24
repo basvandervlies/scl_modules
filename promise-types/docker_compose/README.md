@@ -3,7 +3,7 @@
 ## Synopsis
 
 * *Name*: `docker_compose`
-* *Version*: `1.2.0`
+* *Version*: `1.2.2`
 * *Description*:  Handle the state of the containers defined in the yaml file
 
 ## Requirements
