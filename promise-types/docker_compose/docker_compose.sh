@@ -6,6 +6,9 @@ required_attributes="state"
 optional_attributes="envfile"
 all_attributes_are_valid="no"
 
+## automaticall set by cfbs
+DOCKER_COMPOSE_VERSION="0.0.0"
+
 
 LOG_PREFIX="${0##*/}"
 
@@ -162,4 +165,4 @@ do_evaluate() {
 }
 
 . "$(dirname "$0")/cfengine.sh"
-module_main "docker_compose" "1.0"
+module_main "docker_compose" "${DOCKER_COMPOSE_VERSION}"
