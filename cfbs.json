@@ -1,20 +1,20 @@
 {
-    "name": "scl_modules",
+    "name": "scl-modules",
     "description": "Repository of modules written by the SURF team",
     "type": "modules",
     "provides": {
-        "promise-type-docker_compose": {
+        "promise-type-docker-compose": {
             "description": "Promise type to manage containers using docker compose",
             "dependencies": ["library-for-promise-types-in-bash"],
             "subdirectory": "promise-types/docker_compose/",
             "version": "master",
             "steps": [
                 "copy docker_compose.sh modules/promises/docker_compose.sh",
-                "replace_version 1.3.0 0.0.0 modules/promises/docker_compose.sh",
+                "replace 1 0.0.0 1.3.0 modules/promises/docker_compose.sh",
                 "append enable.cf services/init.cf"
             ]
         },
-        "promise-type-docker_network": {
+        "promise-type-docker-network": {
             "description": "Promise type to manage networks using docker network",
             "dependencies": ["library-for-promise-types-in-bash"],
             "subdirectory": "promise-types/docker_network/",
