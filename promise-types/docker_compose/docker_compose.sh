@@ -62,7 +62,7 @@ do_evaluate() {
 
     log verbose "${LOG_PREFIX}:${request_promiser}"
 
-    docker_ps_output=$(${docker_cmd} ps --format=json 2>&1)
+    docker_ps_output=$(${docker_cmd} ps --all --format=json 2>&1)
     exit_code=$?
     oneline=$(echo ${docker_ps_output})
     log verbose "${LOG_PREFIX}:ps output: ${oneline}, exit_code=${exit_code}"
